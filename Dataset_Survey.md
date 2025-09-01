@@ -4,33 +4,10 @@
 [首页-OpenDataLab](https://opendatalab.com/home)
 [数据集 | HyperAI超神经](https://hyper.ai/cn/datasets)
 [Find Open Datasets and Machine Learning Projects | Kaggle](https://www.kaggle.com/datasets)
-# 常见数据集
 
-## BridgeData V2
+# 大型通用数据集
 
-项目地址：[BridgeData V2](https://rail-berkeley.github.io/bridgedata/)
-Each trajectory is labeled with a natural langauge instruction corresponding to the task the robot is performing.
-- **60,096 轨迹（小规模）**
-    - 50,365 teleoperated demonstrations（大部分为真实遥控收集）
-    - 9,731 rollouts from a scripted pick-and-place policy（部分脚本生成动作）
-- **24 环境**（4大类24种环境，其中厨房环境占大部分）
-- **13 技能**（包括捡起和放置、推、擦、堆叠、折叠等）
-- The control frequency is 5 Hz and the average trajectory length is 38 timesteps.
-- **采集**：1个顶部固定深度相机，2个位置随机相机，1个固定机械臂的第一视角相机
-
-## RoboSet
-
-项目地址：[RoboSet Dataset](https://robopen.github.io/roboset/)
-- **规模**：真实采集共28,500轨迹，其中9500 遥控, 19000 动觉演示；外加70000脚本生成轨迹
-- **采集**：4相机
-- 主要围绕日常厨房活动场景开展，例如泡茶、烘焙等场景。
-## BC-Z
-
-项目地址：[bc-z](https://sites.google.com/view/bc-z/)
-- **规模**：25,877个操作任务，100种多样化的任务
-- **特性**：**单场景**；结合了专家演示和人类纠错；
-- 项目目的是通过模仿学习实现对新任务的**零样本泛化**，对应的特性是**任务多样性、语义标注**
-
+	以下几个数据集都具有大规模、多模态特点，且大规模实采，可训练泛化能力
 ## Open X-Embodiment (OXE)
 
 项目地址：[Open X-Embodiment: Robotic Learning Datasets and RT-X Models](https://robotics-transformer-x.github.io/)
@@ -56,12 +33,7 @@ Each trajectory is labeled with a natural langauge instruction corresponding to 
 	4. 在数据集中常见的技能上，主要集中在Picking（抓）、Moving（移动）、Pushing（推）、Placing（放），整体呈现长尾分布，尾部有许多如Wiping、Assembling、Turning on等难度更高的技能。
 	5. 在数据集常见的物品有家用电器、食品和餐具等，种类繁多。
 
-## DROID（Distributed Robot Interaction Dataset）
 
-项目地址：[DROID: A Large-Scale In-the-Wild Robot Manipulation Dataset](https://droid-dataset.github.io/)
-- **规模**：具有 76k 条演示轨迹或 350 小时的交互数据， 564 个场景和 86 个任务，共1.7TB数据（相对于OXE，**轨迹更少但是场景更多**）
-- **设备**：The setup consists of a Franka Panda 7DoF robot arm, two adjustable Zed 2 stereo cameras, a wristmounted Zed Mini stereo camera, and an Oculus Quest 2 headset with controllers for teleoperation
-- **优点**：**多种动词长尾**
 
 ## AgiBot World
 
@@ -93,21 +65,6 @@ github：[GitHub - OpenDriveLab/AgiBot-World: [IROS 2025] The Large-scale Manipu
 	- **多模态数据的时间对齐**：ARIO支持基于时间戳的记录和命名机制，以确保多模态数据的同步。具体来说，相机数据以30Hz的频率记录，激光雷达（lidar）数据以10Hz记录，本体感觉（proprioception）数据以200Hz记录，触觉数据以100Hz记录。  
 	- **统一的数据架构**：数据集采用场景-任务-片段的层次结构，每个场景和任务都有详细的文本描述。这种结构化的数据组织方式有助于系统地记录和分析数据。  
 	- **统一的配置**： ARIO通过配置文件以统一格式指定数据内容，支持多种机器人形态（如单臂、双臂、仿人、四足、移动机器人）和不同的控制动作（如位置、方向、速度、扭矩等）。这种灵活的配置方式使得数据集能够适应不同类型的机器人和控制需求。  
-
-## BEHAVIOR-1K（全仿真）
-
-项目地址：[BEHAVIOR](https://behavior.stanford.edu/behavior-1k)
-- **规模**：包括1000个日常活动，50多个场景，用物理和语义属性标注的5000个物体
-- **特性**：
-	- 长任务，难度高
-	- 没有完全模拟抓取，抓取实现不理想
-	- sim2real问题
-
-## ALFRED（全仿真）
-
-项目地址：[ALFRED -- A Benchmark for Interpreting Grounded Instructions for Everyday Tasks](https://askforalfred.com/)
-- **规模**：包含 25,743 条自然语言指令，涵盖 8,055 个专家演示，平均每个任务包含 50 个动作步骤，生成 428,322 个图像-动作对
-- **特性**：与常规视觉语言导航数据集不同，ALFRED除了目标指令外，还包含了每一个子目标的分步语言指令作为指导；指令分为高层次目标（如“将杯子放入咖啡机”）和低层次步骤（如“走向右侧的咖啡机”）
 
 ## RoboMIND
 
@@ -148,3 +105,143 @@ github：[GitHub - OpenDriveLab/AgiBot-World: [IROS 2025] The Large-scale Manipu
 	- **跨层级配对**：通过选择不同层级的共同祖先，可生成数百万对<人类示范，机器人操作>数据。共同祖先越近，叶节点关联性越强（例如“插拔USB-A”与“插拔USB-C”比“插拔插座”更相似）。
 
 
+
+
+# 中小数据集
+
+## BridgeData V2（语言动作基础）
+
+项目地址：[BridgeData V2](https://rail-berkeley.github.io/bridgedata/)
+Each trajectory is labeled with a natural langauge instruction corresponding to the task the robot is performing.
+- **60,096 轨迹（小规模）**
+    - 50,365 teleoperated demonstrations（大部分为真实遥控收集）
+    - 9,731 rollouts from a scripted pick-and-place policy（部分脚本生成动作）
+- **24 环境**（4大类24种环境，其中厨房环境占大部分）
+- **13 技能**（包括捡起和放置、推、擦、堆叠、折叠等）
+- The control frequency is 5 Hz and the average trajectory length is 38 timesteps.
+- **采集**：1个顶部固定深度相机，2个位置随机相机，1个固定机械臂的第一视角相机
+
+## RoboSet
+
+项目地址：[RoboSet Dataset](https://robopen.github.io/roboset/)
+- **规模**：真实采集共28,500轨迹，其中9500 遥控, 19000 动觉演示；外加70000脚本生成轨迹
+- **采集**：4相机
+- 主要围绕日常厨房活动场景开展，例如泡茶、烘焙等场景。
+## BC-Z
+
+项目地址：[bc-z](https://sites.google.com/view/bc-z/)
+- **规模**：25,877个操作任务，100种多样化的任务
+- **特性**：**单场景**；结合了专家演示和人类纠错；
+- 项目目的是通过模仿学习实现对新任务的**零样本泛化**，对应的特性是**任务多样性、语义标注**
+## DROID（Distributed Robot Interaction Dataset）
+
+项目地址：[DROID: A Large-Scale In-the-Wild Robot Manipulation Dataset](https://droid-dataset.github.io/)
+- **规模**：具有 76k 条演示轨迹或 350 小时的交互数据， 564 个场景和 86 个任务，共1.7TB数据（相对于OXE，**轨迹更少但是场景更多**）
+- **设备**：The setup consists of a Franka Panda 7DoF robot arm, two adjustable Zed 2 stereo cameras, a wristmounted Zed Mini stereo camera, and an Oculus Quest 2 headset with controllers for teleoperation
+- **优点**：**多种动词长尾**
+
+
+## CALVIN
+
+**项目地址**：[GitHub - mees/calvin: CALVIN - A benchmark for Language-Conditioned Policy Learning for Long-Horizon Robot Manipulation Tasks](https://github.com/mees/calvin)
+**特点**：
+- 100+小时的模拟机器人操作数据
+- 包含**详细语言指令**与动作对齐，专注于**语言指令驱动**的机械臂操作
+- 桌面任务：抓取、放置、排序、组合等
+- 提供状态观测和RGB图像
+
+
+## bytedance_robot_benchmark_20
+
+项目地址：[RoboVLMs: What Matters in Building Vision-Language-Action Models for Generalist Robot Policies](https://robovlms.github.io/)
+- VLA数据集，包含8K高质量轨迹，20个常见操作任务
+
+## Franka Kitchen
+
+
+项目地址：[Franka Kitchen - Gymnasium-Robotics Documentation](https://robotics.farama.org/envs/franka_kitchen/franka_kitchen/)
+- **模拟环境**：MuJoCo
+- 专注于**厨房桌面操作**：开门、按按钮、移动物体等
+- 每个任务有明确的子目标
+- 复杂多步骤桌面操作任务、任务链学习
+
+## BEHAVIOR-1K benchmark（仿真）
+
+项目地址：[BEHAVIOR - BEHAVIOR](https://behavior.stanford.edu/index.html)
+- **规模**：包括1000个日常活动，50多个场景，用物理和语义属性标注的5000个物体
+- **模拟环境**：OmniGibson，基于NVIDIA's IsaacSim（Omniverse平台的仿真套件），专注日常环境
+- 任务长程，难度高；
+- 仿真套件提供了较多素材，自定义
+
+
+## ALFRED benchmark（仿真）
+
+项目地址：[ALFRED -- A Benchmark for Interpreting Grounded Instructions for Everyday Tasks](https://askforalfred.com/)
+- **规模**：包含 25,743 条自然语言指令，涵盖 8,055 个专家演示，平均每个任务包含 50 个动作步骤，生成 428,322 个图像-动作对；每个专家演示都可以在 AI2-THOR 2.0 模拟器中确定性地重播
+- **特性**：与常规视觉语言导航数据集不同，ALFRED除了目标指令外，还包含了每一个子目标的分步语言指令作为指导；指令分为高层次目标（如“将杯子放入咖啡机”）和低层次步骤（如“走向右侧的咖啡机”）
+
+- 文件结构：[alfred/data at master · askforalfred/alfred · GitHub](https://github.com/askforalfred/alfred/tree/master/data)
+	Expert Demonstration:
+## LIBERO benchmark（仿真）
+
+项目地址：[LIBERO Datasets – LIBERO](https://libero-project.github.io/datasets)
+- **环境**：基于 MuJoCo和robosuite
+- **数据内容**：每个演示轨迹包含一系列时间步的数据，每个时间步通常包括：
+	- **观测 (Observation)**:
+	    - `agent_view`: 机器人主视角的 RGB 图像，通常分辨率为 256x256 像素 .
+	    - `state` 或 `robot_state`: 机器人末端执行器（End-Effector）的状态，如 6D 位姿（位置和方向）和夹爪状态 .
+	- **动作 (Action)**: 机器人应执行的动作，通常是连续的控制指令，例如末端执行器的位移（Δx, Δy, Δz）和旋转（Δroll, Δpitch, Δyaw），以及夹爪的开合指令 .
+	- **任务描述 (Task Description)**: 用自然语言描述的当前任务目标，例如“把红色的方块放进蓝色的碗里”
+- **子数据集**：
+	1. **`libero_spatial`**: 评估模型对**空间关系**的理解和泛化能力，例如“将物体放在杯子的左边” .
+	2. **`libero_object`**: 评估模型对**不同物体**的泛化能力，测试模型能否将在一种物体上学到的技能迁移到新物体上 .
+	3. **`libero_goal`**: 评估模型对**不同目标状态**的泛化能力，例如根据一张目标图像来完成任务 .
+	4. **`libero_100`**: 这是一个包含100个任务的大型套件，涵盖了更广泛的操作技能，是评估综合性能的主要基准 . 该套件有时也被拆分为 `libero_90` 和 `libero_10` .
+- **架构**：
+	- **资源层**：通过 `assets` 和 `scenes` 管理基础模型。
+	- **定义层**：通过 Python 类程序化地定义和初始化场景。
+	- **目标层**：通过 BDDL 文件声明式地定义任务成功条件。
+	- **交互层**：遵循标准的 Gym 接口与学习算法交互。
+	- **数据层**：提供并支持创建标准化的 HDF5 演示数据集。
+- 
+
+
+## RLBench
+
+项目地址：[RLBench](https://sites.google.com/view/rlbench)
+- **环境**：CoppeliaSim v4.1.0 and [PyRep](https://github.com/stepjam/PyRep)，兼容gym
+- **内容**：
+	- 包含**100+桌面操作任务**
+	- 每个任务提供**专家演示轨迹**（通过IK控制器生成）
+	- 支持RGB、深度、分割图等多种视觉输入
+- **特点**：
+	- 可直接用于RL，IL训练
+	- 可自定义任务
+
+
+## ManiSkill2
+
+项目地址：[ManiSkill](https://www.maniskill.ai/)
+- **环境**：基于SAPIEN 2.0，物理模拟精确
+- **内容**：专注于**精细操作技能**，特别**适合桌面任务**
+	- 插销任务（Peg Insertion）
+	- 门把手操作（Door Opening）
+	- 拼图任务（Puzzle）
+	- 拧盖子（Jar Cap）
+	- 按键操作（Button Press）
+- 提供**状态观测**和**视觉观测**两种模式
+
+## YCB-Video
+
+项目地址：[PoseCNN: A Convolutional Neural Network for 6D Object Pose Estimation in Cluttered Scenes – UW Robotics and State Estimation Lab](https://rse-lab.cs.washington.edu/projects/posecnn/)
+- 主要用于**6D对象姿态估计**训练
+- **内容**：数据集提供了来自YCB数据集的21个对象的精确6D姿势，这些对象出现在92个视频中，整个数据集包含133,827帧
+- 视频帧经过精细标注，包括物体边界框、3D模型对齐信息以及深度图
+- 适用于多种计算机视觉任务，如物体检测、姿态估计和场景理解
+
+## RoboTurk
+
+项目地址：[RoboTurk - Crowdsourcing Robotics](https://roboturk.stanford.edu/)
+- 通过众包收集的大规模机器人操作数据集
+- **规模**：1,000+小时操作数据，15,000+任务实例
+- 适合研究人类偏好学习
