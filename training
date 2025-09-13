@@ -1,0 +1,137 @@
+## ==数据收集与生成==
+### （数据集）Open X-Embodiment: Robotic Learning Datasets and RT-X Models（2023/10/13）
+
+基于多平台数据构建，高容量，内容丰富，包含百万条真实机器人轨迹；在多种架构的transformer上表现出优秀训练效果(rt-1,rt-2训练得到rt-x变体)，体现出泛化能力
+
+### （导览视频重建3d+轨迹提取增强）RoomTour3D: Geometry-Aware Video-Instruction Tuning for Embodied Navigation（2024/12/11）
+
+- **视频数据源：** 利用网络上丰富的**真实世界房间参观视频**，提供高度**多样化**和**开放性**的室内环境。
+- **3D 重建：** 使用 **COLMAP** 等工具对视频进行**3D 重建**，获取详细的**几何信息**，包括场景布局和物体位置。
+- **轨迹提取与增强：**
+    - 从连续视频帧中**采样人类步行轨迹**。
+    - 利用 **RAM**、**Grounding-DINO** 和 **Depth-Anything** 等模型，实现**物体识别、精确定位和深度估计**，为轨迹提供**空间感知**能力。
+    - 利用 **BLIP-2** 识别**房间类型**。
+    - 使用 **GPT-4**，结合提取的物体信息、空间位置和房间类型，生成**描述丰富且开放词汇的导航指令**（Description-Enriched Trajectories）。
+    - 通过识别**显著的视角变化点**（Navigable points generation），生成**包含更多样化动作选择的轨迹**（Action-Enriched Trajectories），以增强导航的灵活性。
+
+
+### （视频生成模型生成2DHSI视频，再转化为4DHSI）ZeroHSI: Zero-Shot 4D Human-Scene Interaction by Video Generation（2024/12/24）
+
+- **ZeroHSI** 的关键在于利用**先进的视频生成模型**（如 KLING），这些模型已在海量视频数据上训练，能够捕捉自然的人类动作和场景交互。然后，通过**可微分渲染**技术，将生成的 2D HSI 视频“提升”到 4D 交互序列。
+- **优化流程：**
+    - **HSI 视频生成：** 首先，给定一个 3D 场景、初始人体姿态、对象位姿和一个文本提示，生成一个初始帧，然后使用视频生成模型生成初步的 HSI 视频。
+    - **4D HSI 重建（优化）：** 论文提出了一种**基于优化的方法**，利用可微分渲染，通过最小化渲染输出与生成的视频之间的差异，来优化每帧的**相机位姿、人体姿态**（特别是根部平移和全局方向）以及**对象的 6D 位姿**。为了处理动态对象，还引入了**中心点损失**和**深度正则化损失**。
+    - **精炼（Refinement）：** 为了提高运动的自然度和物理合理性，采用 VPoser [60] 作为人体姿态先验，通过**拟合损失**进一步精炼人体姿态。
+## ==VLA 训练方法==
+### RT-2: Vision-Language-Action Models Transfer Web Knowledge to Robotic Control（2023/7/28）
+- 基于VLM的transformer架构
+- **动作的符号化：** (VLM到VLA的区别）将机器人动作编码为文本标记，统一了语言和动作的表示空间，使得 VLM 可以直接生成动作。
+	![[Pasted image 20250729171334.png]]
+- **联合微调 (Co-Fine-Tuning)：** 将机器人数据与原始网络数据进行联合微调，而不是仅仅对机器人数据进行简单微调（使模型不会忘记在VLM训练期间学到的先前概念）；通过增加机器人数据集的采样权重来平衡每个训练批次中机器人数据和网络数据的比例；此方法能增加泛化能力
+- **缺陷**：没有涌现得到执行新动作的能力（数据集的技能有限）**通过学习人类视频而不限制于机器人视频可能可以改善这方面能力
+
+
+
+### （NaviLLM）Towards Learning a Generalist Model for Embodied Navigation（2023/12/4）
+
+-  **模型架构与流程**:
+    - **场景编码器 (Scene Encoder)**: 负责从多视角图像中提取视觉特征，并通过多视图融合生成场景表示。
+    - **LLM**: 接收场景表示、任务指令和历史记录（通过模式化指令格式化后）作为输入，预测下一步动作（如导航方向、对象ID或文本响应）。
+-  **模式化指令 (Schema-based Instruction)**: 将各种具身导航任务（如视觉-语言导航、对象定位、轨迹摘要、3D问答等）统一转化为**生成问题 (generative modeling)**，从而能够整合来自不同数据集的多样化训练数据。模式化指令包含 **任务 (Task)**、**观察 (Observation)** 和 **输出提示 (Output Hint)** 三个部分，用以指导 LLM 生成正确的动作。 
+
+### NaVid: Video-based VLM Plans the Next Step for Vision-and-Language Navigation（2024/2/24）
+- 相对于navillm，增加历史帧，并且简化加速推理
+- uni_navid的初始版本，没用到长短时记忆；利用了VLM，不过VLA的A只实现navigation（VLN）
+![[Pasted image 20250728173912.png]]
+
+
+
+### Uni-NaVid: A Video-based Vision-Language-Action Model for Unifying Embodied Navigation Tasks（2024/12/9）
+- **相对于navid，增加长短时记忆，并且扩展任务范围**
+	- **输入：** 接收**单一的、视角固定的RGB视频流**和**自然语言指令**。
+	- **输出：** 直接输出**低级的机器人动作**（如前进、左转、右转、停止）。
+	- **任务统一：** 模型能够同时处理**视觉语言导航（VLN）**、**目标导航（Object Goal Navigation）**、**具身问答（Embodied Question Answering）** 和**跟随人类（Human Following）** 这四种广泛需求的导航任务。
+	- **关键技术 Online Visual Token Merging**：
+		将视觉token分为当前视觉token $X_{curr}$、短期视觉token $X_{short}$ 和长期视觉token $X_{long}$
+	
+	![[Pasted image 20250728160034.png]]
+
+
+
+
+
+### （开源VLA模型）OpenVLA: An Open-Source Vision-Language-Action Model（2024/6/13）
+
+主要贡献在开源；基于**Open X-Embodiment dataset**数据集，在预训练的VLM上训练；动作离散化表示
+
+### （跨领域数据的sft+rl微调）From Multimodal LLMs to Generalist Embodied Agents: Methods and Lessons（2024/12/11）
+
+1. **多模态分词器**：RT-2是将动作“翻译”成现有语言的一部分，而GEA的动作分词器则是在学习如何“创造”一种通用的语言来描述不同动作
+2. 通过**多样化领域的数据进行SFT**和**在线RL**， 展现出强大的通用能力
+
+
+### （π0：VLM+流匹配，生成方法的微调，50HZ+）π0: A Vision-Language-Action Flow Model for General Robot Control（2024/10/31）
+
+- **流匹配**：FLOW MATCHING FOR GENERATIVE MODELING（2022/10/6）
+![[Pasted image 20250804160748.png]]
+- **与之前的方法的区别**：之前的方法中动作被分解成一系列离散的“动作 token”，而流匹配可以直接学习生成连续的动作输出，控制频率可以提高到50HZ（之前的方法在10hz以下）
+- **架构：** VLM输出**中间嵌入表示**，包含对环境和任务的理解，再交给动作专家，通过流匹配生成动作
+### （LLM规划+模块化+零样本）TANGO: Training-free Embodied AI Agents for Open-world Tasks（2024/12/5）
+- 主要引用：（VisProg，神经符号方法）**Visual Programming: Compositional visual reasoning without training**（2022/11/18）
+	- **原理**：利用大型语言模型的上下文学习能力来生成类似Python的模块化程序，生成的程序的每一行都可以调用几个现成的计算机视觉模型、图像处理子程序或Python函数之一，以产生中间输出，这些输出可以被程序的后续部分使用
+	- **无需任务特定训练：** 能够通过提供少量示例来适应新任务，避免了为每个任务收集大量标注数据并进行模型训练的繁琐过程。
+	- **灵活性和通用性：** 能够处理各种复杂的视觉任务，这些任务通常需要组合多个不同能力的模块。
+	- **可解释性强：** 生成的程序和视觉化推理过程使得整个过程透明化。
+	- **模块化：** 容易添加新模块以扩展系统能力。
+- 模块化：![[Pasted image 20250731163840.png]]
+- 优势：零样本实现高性能；无需微调；模块化便于升级
+
+### （提出分阶段微调方法）ConRFT: A Reinforced Fine-tuning Method for VLA Models via Consistency Policy（2025/2/8）
+
+1. **阶段一：离线微调 (Cal-ConRFT)**
+    - **目标：** 利用少量（20-30个）预收集的演示数据，为 VLA 模型初始化一个稳定且有效的策略和价值函数。
+    - **方法：** 结合了**行为克隆 (BC)** 损失和**校准 Q-学习 (Cal-QL)**。BC 损失确保策略模仿演示行为，而 Cal-QL 旨在使 Q 值对分布外 (OOD) 动作具有鲁棒性，从而稳定价值估计。这种结合有助于在数据稀缺的情况下，使策略在接触密集型任务中更精确。
+2. **阶段二：在线微调 (HIL-ConRFT)**
+    - **目标：** 在真实世界环境中进一步优化 VLA 模型，以提高样本效率和安全性。
+    - **方法：** 在离线阶段的基础上，利用**任务特定的奖励信号**和**人工干预 (Human-in-the-Loop, HIL)** 进行微调。通过人类操作员在必要时进行纠正，可以确保探索的安全性，并加速策略的收敛。该阶段也使用一致性策略作为动作头
+### （微调策略）Fine-Tuning Vision-Language-Action Models: Optimizing Speed and Success（2025/2/27）
+
+- 效果：相对于π0（扩散模型），L1 回归作为学习目标在保持算法简单性的同时，能够实现更快的训练收敛速度和推理速度
+![[Pasted image 20250804224435.png]]
+1. **并行解码（Parallel Decoding）与动作分块（Action Chunking）：**
+	- 作者修改了模型，使其接收空的动作嵌入作为输入，并将因果注意力掩码替换为双向注意力，从而允许解码器同时预测所有动作。这会将动作生成从D个顺序传递减少到单个传递，其中D是动作维度
+	- 并行解码自然地扩展到动作分块：为了预测多个未来时间步的动作，我们只需在解码器的输入中插入额外的空动作嵌入，然后将其映射到一组未来动作
+2. **连续动作表示与L1 回归学习目标
+	- 将解码器的输出嵌入层替换为MLP动作头来实现L1回归，该动作头直接将最终解码器层隐藏状态映射到连续动作值。该模型经过训练，旨在最小化预测动作与真实动作之间的平均L1差异，从而在潜在地提高动作精度的同时，保持并行解码的效率优势。
+3. **利用film增强语言跟随能力**
+	**FiLM: Visual Reasoning with a General Conditioning Layer（2017/9/1）**
+### （结合人类数据的训练）EgoVLA : Learning Vision-Language-Action Models from Egocentric Human Videos（2025/7/16）
+
+利用人类操作视频（包括图像和**相机、姿态标注**）预训练，再用少量机器人操作数据微调；
+- **思路**：人类动作与机器人动作的关联性
+- **优势**：人类数据相对于机器人数据动作更丰富、复杂，用于训练潜在更多的泛化可能性
+- **缺陷**：人类数据的标注成本高（需要姿态采集）
+
+### （图像-文本交错指令）Interleave-VLA: Enhancing Robot Manipulation with Interleaved Image-Text Instructions
+
+-  **Interleave-VLA** 框架，它是一种简单、模型无关的范式，能够让现有的 VLA 模型处理交错的图像-文本指令，并将其扩展到物理世界的机器人操作任务
+1. **框架创新：** 提出了第一个能够理解交错图像-文本指令并直接生成物理世界连续动作序列的端到端机器人策略。
+2. **数据集创建：** 开发了一个**全自动流水线**，将现有数据集（如 Open X-Embodiment）中的纯文本指令转换为图像-文本交错指令，从而创建了**首个大规模、真实世界的交错具身数据集**，包含 210k 个回合和 1300 万帧。
+3. **模型适应性：** Interleave-VLA 是一种**模型无关**的适应性方法，只需对现有 VLA 模型进行**最小的架构修改**，即可支持交错指令输入。
+4. **显著的性能提升：** 实验证明，Interleave-VLA 在模拟和真实机器人实验中，相比纯文本指令的 VLA 模型，在**域内（in-domain）任务上表现稳定**，并在**域外（out-of-domain）泛化能力上提升了 2-3 倍**。
+5. **涌现的零样本能力：** Interleave-VLA 展现出强大的**零样本泛化能力**，能够处理训练数据中未曾见过的多种用户提供的指令格式，如**手绘草图、用户裁剪的图像、互联网图片**等，大大提高了人机交互的灵活性和直观性。
+
+### （VLM对接WM）GenRL: Multimodal-foundation world models for generalization in embodied agents
+
+**MFWM 的整体工作流程：**
+- **预训练阶段：**
+    1. 首先，独立地预训练一个**生成式世界模型**，使其能够学习环境的动态，并将其编码到潜在空间 `S`。
+    2. 然后，利用预训练的 VLM，获取大量的视觉数据 `x_{t:t+k}` 的视觉嵌入 `e(v)`。
+    3. **连接器**被训练来将 VLM 的视觉嵌入 `e(v)` 映射到世界模型的潜在状态 `s_t`。
+    4. **对齐器**被训练来将 VLM 视觉嵌入 `e(v)` 周围的采样点拉近 `e(v)`，从而间接解决多模态对齐问题。
+- **任务指定和行为学习阶段：**
+    1. 当接收到一个**语言或视觉提示**（task prompt）时，VLM 的语言/视觉嵌入器将其转换为嵌入 `e_{task}`。
+    2. **连接器**将 `e_{task}`（如果是视觉提示，则是其视觉嵌入；如果是语言提示，也通过视觉嵌入器处理，或者通过一个单独的对齐器处理后输入连接器）转换为一系列**潜在目标状态** `c_{task}`。
+    3. **生成式世界模型**利用这些潜在目标状态 `c_{task}`，通过其动态模型**想象**（imagine）出轨迹。
+    4. 一个**策略模型**（policy model）被训练来最大化一个**奖励函数**（如论文中的 Eq. 3），该奖励函数衡量了策略产生的轨迹与由提示生成的潜在目标轨迹之间的**相似性**。
+
